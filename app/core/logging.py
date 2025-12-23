@@ -1,21 +1,9 @@
-# app/core/config.py
-from pydantic_settings import BaseSettings
+# app/core/logging.py
+import logging
 
 
-class Settings(BaseSettings):
-    app_name: str = "LLM RAG Service"
-    environment: str = "dev"
-
-    # API
-    host: str = "0.0.0.0"
-    port: int = 8000
-
-    # Vector DB (future)
-    qdrant_host: str = "localhost"
-    qdrant_port: int = 6333
-
-    class Config:
-        env_file = ".env"
-
-
-settings = Settings()
+def setup_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    )
