@@ -58,3 +58,9 @@ These features are intentionally deferred but **architecturally supported**.
 
 ```bash
 uvicorn app.main:app --reload
+```
+
+## Health check
+```bash
+GET /health
+```
