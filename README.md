@@ -71,3 +71,8 @@ uvicorn app.main:app --reload
 ```bash
 GET /health
 ```
+
+## Qdrant setup
+- Create a folder `qdrant_storage` inside the project  
+- Open the docker ( docker for desktop in windows ) and verify docker is running
+- To install qdrant : ```bash docker run -p 6333:6333 -p 6334:6334 -v {your_current_path}\qdrant_storage:/qdrant/storage qdrant/qdrant```
