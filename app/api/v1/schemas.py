@@ -1,3 +1,4 @@
+# app/api/v1/schemas.py
 from pydantic import BaseModel
 
 
@@ -6,4 +7,4 @@ class IngestRequest(BaseModel):
 
 
 class IngestResponse(BaseModel):
-    characters: int
+    chunk_count: int
