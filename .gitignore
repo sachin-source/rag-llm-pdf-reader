@@ -77,3 +77,8 @@ htmlcov/
 # Doc txt files
 # =========================
 *.txt
+
+# =========================
+# qdrant storage
+# =========================
+qdrant_storage/
