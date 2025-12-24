@@ -1,19 +1,19 @@
-# app/api/v1/routes.py
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 from app.api.v1.schemas import IngestRequest, IngestResponse
 from app.ingestion.local_file import LocalFileIngestor
 from app.ingestion.pipeline import IngestionPipeline
-from app.embeddings.st_embedder import SentenceTransformerEmbedder
 
 router = APIRouter()
 
 
 @router.post("/ingest", response_model=IngestResponse)
-def ingest(request: IngestRequest):
+def ingest(request: IngestRequest, http_request: Request):
+    embedder = http_request.app.state.embedder
+
     pipeline = IngestionPipeline(
         ingestor=LocalFileIngestor(),
-        embedder=SentenceTransformerEmbedder(),
+        embedder=embedder,
     )
 
     results = pipeline.run(request.path)

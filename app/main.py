@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 
-from app.api.v1.routes import router as v1_router
-from app.core.config import settings
-from app.core.logging import setup_logging
+from app.api.v1.routes import router
+from app.embeddings.st_embedder import SentenceTransformerEmbedder
+
+app = FastAPI()
 
 
-def create_app() -> FastAPI:
-    setup_logging()
+@app.on_event("startup")
+def startup_event():
+    # Load once at startup
+    embedder = SentenceTransformerEmbedder()
+    embedder.embed(["startup warmup"])
 
-    app = FastAPI(title=settings.app_name)
-    app.include_router(v1_router, prefix="/api/v1")
-
-    return app
+    app.state.embedder = embedder
 
 
-app = create_app()
+app.include_router(router, prefix="/api/v1")
