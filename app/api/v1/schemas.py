@@ -8,3 +8,4 @@ class IngestRequest(BaseModel):
 
 class IngestResponse(BaseModel):
     chunk_count: int
+    embedding_dim: int
