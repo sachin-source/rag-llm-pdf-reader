@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.schemas import IngestRequest, IngestResponse
-from app.ingestion.local_text import LocalTextIngestor
+from app.ingestion.local_file import LocalTextIngestor
 from app.ingestion.pipeline import IngestionPipeline
 
 router = APIRouter()

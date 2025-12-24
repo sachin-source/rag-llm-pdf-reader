@@ -1,5 +1,5 @@
 from pathlib import Path
-from app.ingestion.base import Ingestor
+from app.ingestion.ingestor import Ingestor
 
 
 class LocalTextIngestor(Ingestor):
