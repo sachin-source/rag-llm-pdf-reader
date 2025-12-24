@@ -53,6 +53,13 @@ These features are intentionally deferred but **architecturally supported**.
 - Docker (local & prod parity)
 
 ---
+## Activate the environment
+```bash
+uv venv
+source .venv/bin/activate
+uv add
+.venv\Scripts\activate
+```
 
 ## ▶️ Running Locally (Development)
 
