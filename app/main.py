@@ -10,7 +10,7 @@ app = FastAPI()
 def startup_event():
     # Load once at startup
     embedder = SentenceTransformerEmbedder()
-    embedder.embed(["startup warmup"])
+    embedder.embed_query(["startup warmup"])
 
     app.state.embedder = embedder
 
