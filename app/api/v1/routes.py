@@ -4,6 +4,10 @@ from app.api.v1.schemas import IngestRequest, IngestResponse
 from app.ingestion.local_file import LocalFileIngestor
 from app.ingestion.pipeline import IngestionPipeline
 
+from app.retrieval.service import RetrievalService
+from app.vectorstore.qdrant import QdrantVectorStore
+from app.api.v1.schemas import QueryRequest, QueryResponse
+
 router = APIRouter()
 
 
@@ -22,3 +26,23 @@ def ingest(request: IngestRequest, http_request: Request):
         chunk_count=len(results),
         embedding_dim=len(results[0][1]),
     )
+
+@router.post("/query", response_model=QueryResponse)
+def query(
+    request: QueryRequest,
+    http_request: Request,
+):
+    embedder = http_request.app.state.embedder
+    vector_store = QdrantVectorStore()
+
+    service = RetrievalService(
+        embedder=embedder,
+        vector_store=vector_store,
+    )
+
+    contexts = service.retrieve(
+        question=request.question,
+        top_k=request.top_k,
+    )
+
+    return QueryResponse(contexts=contexts)
