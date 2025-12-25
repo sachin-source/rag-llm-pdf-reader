@@ -7,5 +7,5 @@ class Embedder(ABC):
     """Contract for embedding models."""
 
     @abstractmethod
-    def embed(self, texts: List[str]) -> List[list[float]]:
+    def embed_query(self, texts: List[str]) -> List[list[float]]:
         pass
