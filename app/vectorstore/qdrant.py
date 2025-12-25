@@ -43,8 +43,8 @@ class QdrantVectorStore(VectorStore):
         )
 
     def search(self, query_vector: list[float], limit: int = 5):
-        return self.client.search(
+        return self.client.query_points(
             collection_name=self.collection_name,
-            query_vector=query_vector,
+            query=query_vector,
             limit=limit,
         )
