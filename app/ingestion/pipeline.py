@@ -32,6 +32,6 @@ class IngestionPipeline:
         )
 
         texts = [chunk.text for chunk in chunks]
-        vectors = self.embedder.embed(texts)
+        vectors = self.embedder.embed_query(texts)
 
         return list(zip(chunks, vectors))
