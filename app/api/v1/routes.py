@@ -8,8 +8,16 @@ from app.retrieval.service import RetrievalService
 from app.vectorstore.qdrant import QdrantVectorStore
 from app.api.v1.schemas import QueryRequest, QueryResponse
 
+from app.llm.llama_cpp import LlamaCppLLM
+from app.qa.service import QAService
+
 router = APIRouter()
 
+llm = LlamaCppLLM(
+    model_path="model/mistral.gguf",
+)
+
+qa_service = QAService(llm)
 
 @router.post("/ingest", response_model=IngestResponse)
 def ingest(request: IngestRequest, http_request: Request):
@@ -18,6 +26,7 @@ def ingest(request: IngestRequest, http_request: Request):
     pipeline = IngestionPipeline(
         ingestor=LocalFileIngestor(),
         embedder=embedder,
+        vector_store=QdrantVectorStore(),
     )
 
     results = pipeline.run(request.path)
@@ -44,5 +53,16 @@ def query(
         question=request.question,
         top_k=request.top_k,
     )
+    
+    answer = qa_service.answer(
+    question=request.question,
+    contexts=contexts,
+)
 
-    return QueryResponse(contexts=contexts)
+    return {
+        "question": request.question,
+        "answer": answer,
+        "contexts": contexts,
+    }
+
+    # return QueryResponse(contexts=contexts)
