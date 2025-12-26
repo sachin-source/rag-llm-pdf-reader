@@ -1,5 +1,6 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance, PointStruct
+from qdrant_client.models import VectorParams, Distance, PointStruct, SearchParams
+import uuid
 
 from app.vectorstore.base import VectorStore
 
@@ -14,7 +15,6 @@ class QdrantVectorStore(VectorStore):
     ):
         self.collection_name = collection_name
         self.client = QdrantClient(host=host, port=port)
-
         self._ensure_collection(vector_size)
 
     def _ensure_collection(self, vector_size: int) -> None:
@@ -27,15 +27,25 @@ class QdrantVectorStore(VectorStore):
                 ),
             )
 
-    def add(self, vectors: list[list[float]], payloads: list[dict]) -> None:
-        points = [
-            PointStruct(
-                id=i,
-                vector=vectors[i],
-                payload=payloads[i],
+    def add(
+        self,
+        texts: list[str],
+        embeddings: list[list[float]],
+        metadatas: list[dict],
+    ):
+        points = []
+
+        for text, vector, metadata in zip(texts, embeddings, metadatas):
+            points.append(
+                PointStruct(
+                    id=str(uuid.uuid4()),
+                    vector=vector,
+                    payload={
+                        "text": text,
+                        **metadata,
+                    },
+                )
             )
-            for i in range(len(vectors))
-        ]
 
         self.client.upsert(
             collection_name=self.collection_name,
@@ -43,8 +53,12 @@ class QdrantVectorStore(VectorStore):
         )
 
     def search(self, query_vector: list[float], limit: int = 5):
-        return self.client.query_points(
+        results = self.client.query_points(
             collection_name=self.collection_name,
             query=query_vector,
             limit=limit,
+            with_payload=True,
+            with_vectors=True,
+            score_threshold=0.0,
         )
+        return results
