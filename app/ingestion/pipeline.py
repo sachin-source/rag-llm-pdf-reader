@@ -4,6 +4,7 @@ from typing import List, Tuple
 from app.ingestion.ingestor import Ingestor
 from app.processing.chunker import chunk_text, TextChunk
 from app.embeddings.embedder import Embedder
+from app.vectorstore.base import VectorStore
 
 
 class IngestionPipeline:
@@ -11,6 +12,7 @@ class IngestionPipeline:
         self,
         ingestor: Ingestor,
         embedder: Embedder,
+        vector_store: VectorStore,
         chunk_size: int = 500,
         overlap: int = 100,
     ):
@@ -18,6 +20,7 @@ class IngestionPipeline:
         self.embedder = embedder
         self.chunk_size = chunk_size
         self.overlap = overlap
+        self.vector_store = vector_store
 
     def run(self, source: str) -> List[Tuple[TextChunk, list[float]]]:
         raw_text = self.ingestor.load(source)
@@ -32,6 +35,12 @@ class IngestionPipeline:
         )
 
         texts = [chunk.text for chunk in chunks]
-        vectors = self.embedder.embed_query(texts)
+        embeddings = self.embedder.embed_query(texts)
+        
+        self.vector_store.add(
+            texts=[chunk.text for chunk in chunks],
+            embeddings=embeddings,
+            metadatas=[chunk.metadata for chunk in chunks],
+        )
 
-        return list(zip(chunks, vectors))
+        return list(zip(chunks, embeddings))
