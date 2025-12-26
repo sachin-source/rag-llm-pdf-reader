@@ -11,19 +11,23 @@ class RetrievalService:
     def retrieve(self, question: str, top_k: int = 5) -> list[str]:
         query_vector = self.embedder.embed_query(question)
 
-        points = self.vector_store.search(
+        points_response = self.vector_store.search(
             query_vector=query_vector,
             limit=top_k
         )
         
+        if hasattr(points_response, "points"):
+            points = points_response.points
+        elif isinstance(points_response, dict) and "result" in points_response:
+            points = points_response["result"]
+        else:
+            points = points_response
+        
         contexts = []
 
         for p in points:
-            if isinstance(p, tuple):
-                for item in p:
-                    if isinstance(item, dict) and "text" in item:
-                        contexts.append(item["text"])
-                        break
+            if hasattr(p, "payload") and "text" in p.payload:
+                contexts.append(p.payload["text"])
 
         return contexts
 
